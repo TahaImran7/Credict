@@ -3,10 +3,12 @@ CreditLens — central configuration.
 
 Single source of truth for:
 - Random seed
-- Target column and class labels
-- Dataset filename convention
-- Risk-band thresholds (analytical choice, documented)
-- Paths (re-exported from src.utils.paths)
+- Dataset URL, filename, and header row
+- Target column (canonical name + known variants)
+- Feature columns in fixed order
+- Cleaning maps for undocumented category codes
+- Risk-band thresholds (analytical, documented in docs/project_overview.md)
+- Split parameters and logging level
 
 All modules must import constants from here rather than hard-coding values.
 """
@@ -30,31 +32,85 @@ RANDOM_SEED: int = 42
 # ---------------------------------------------------------------------------
 # Dataset
 # ---------------------------------------------------------------------------
-# The UCI file is distributed as an .xls workbook. Confirm the real filename
-# after download in Phase 2; this is the expected default.
 DATASET_FILENAME: str = "default of credit card clients.xls"
+DATASET_URL: str = (
+    "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/"
+    "default%20of%20credit%20card%20clients.xls"
+)
 
-# Original target column name in the UCI file. Some mirrors rename this to
-# "default.payment.next.month". The loader in Phase 2 will reconcile both.
+# Row 0 in the .xls file is X1, X2, ..., Y (a legacy numbering row).
+# Row 1 contains the real column names.
+DATASET_HEADER_ROW: int = 1
+
+# Canonical target column name used throughout CreditLens.
+TARGET_COLUMN: str = "default payment next month"
+
+# Variants observed in other mirrors of the same dataset. The loader renames
+# whichever variant it finds to TARGET_COLUMN.
 TARGET_COLUMN_CANDIDATES: tuple[str, ...] = (
-    "default.payment.next.month",
     "default payment next month",
+    "default.payment.next.month",
     "Y",
 )
 
-# Positive class = default occurred next month.
 POSITIVE_CLASS_LABEL: int = 1
 NEGATIVE_CLASS_LABEL: int = 0
 
+# Identifier columns dropped before modeling.
+ID_COLUMNS: tuple[str, ...] = ("ID", "id")
+
+# The 23 feature columns in fixed order. Every model and preprocessor must
+# consume the features in this exact order.
+FEATURE_COLUMNS: tuple[str, ...] = (
+    "LIMIT_BAL",
+    "SEX",
+    "EDUCATION",
+    "MARRIAGE",
+    "AGE",
+    "PAY_0",
+    "PAY_2",
+    "PAY_3",
+    "PAY_4",
+    "PAY_5",
+    "PAY_6",
+    "BILL_AMT1", "BILL_AMT2", "BILL_AMT3", "BILL_AMT4", "BILL_AMT5", "BILL_AMT6",
+    "PAY_AMT1", "PAY_AMT2", "PAY_AMT3", "PAY_AMT4", "PAY_AMT5", "PAY_AMT6",
+)
+
+# Continuous / numeric features.
+NUMERIC_FEATURES: tuple[str, ...] = (
+    "LIMIT_BAL",
+    "AGE",
+    "BILL_AMT1", "BILL_AMT2", "BILL_AMT3", "BILL_AMT4", "BILL_AMT5", "BILL_AMT6",
+    "PAY_AMT1", "PAY_AMT2", "PAY_AMT3", "PAY_AMT4", "PAY_AMT5", "PAY_AMT6",
+)
+
+# Categorical features. Repayment-status fields (PAY_*) are treated as
+# categorical here because the numeric codes are not a linear severity scale:
+# negative values carry distinct semantic meanings (-2 = no consumption,
+# -1 = paid in full, 0 = revolving credit). One-hot encoding avoids imposing
+# a false ordinal structure on Logistic Regression.
+CATEGORICAL_FEATURES: tuple[str, ...] = (
+    "SEX",
+    "EDUCATION",
+    "MARRIAGE",
+    "PAY_0", "PAY_2", "PAY_3", "PAY_4", "PAY_5", "PAY_6",
+)
+
+# Documented cleaning decisions for undocumented category codes.
+# EDUCATION: 0, 5, 6 are not in the UCI data dictionary → merged into 4 (others).
+# MARRIAGE: 0 is not in the UCI data dictionary → merged into 3 (others).
+EDUCATION_MAP: dict[int, int] = {0: 4, 5: 4, 6: 4}
+MARRIAGE_MAP: dict[int, int] = {0: 3}
+
 # ---------------------------------------------------------------------------
 # Risk bands — analytical thresholds, not regulatory classifications.
-# Documented in docs/project_overview.md and shown in the UI.
 # ---------------------------------------------------------------------------
 RISK_BANDS: dict[str, tuple[float, float]] = {
     "Low":       (0.00, 0.20),
     "Moderate":  (0.20, 0.50),
     "High":      (0.50, 0.80),
-    "Very High": (0.80, 1.01),   # upper bound exclusive in code
+    "Very High": (0.80, 1.01),
 }
 
 # ---------------------------------------------------------------------------

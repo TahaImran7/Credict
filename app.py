@@ -40,7 +40,7 @@ def _writable(path: Path) -> bool:
 
 st.set_page_config(
     page_title="CreditLens — Phase 1 Verification",
-    page_icon="🔎",
+    page_icon=None,
     layout="wide",
 )
 
