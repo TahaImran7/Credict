@@ -17,7 +17,7 @@ from ui import styles
 def _base_layout(fig: go.Figure, height: int = 380, showlegend: bool = False) -> go.Figure:
     fig.update_layout(
         height=height,
-        margin=dict(l=20, r=20, t=30, b=20),
+        margin=dict(l=20, r=20, t=40, b=20),
         font=dict(family=styles.FONT_STACK, size=12, color=styles.NAVY),
         plot_bgcolor="white",
         paper_bgcolor="white",

@@ -44,7 +44,7 @@ def page_title(title: str, description: str) -> None:
 def kpi_card(label: str, value: str, hint: str | None = None) -> str:
     hint_html = f'<div class="cl-kpi-hint">{hint}</div>' if hint else ""
     return (
-        f'<div class="cl-card">'
+        f'<div class="cl-card" style="border-top: 2px solid {styles.ACCENT_SOFT};">'
         f'<div class="cl-kpi-label">{label}</div>'
         f'<div class="cl-kpi-value">{value}</div>'
         f'{hint_html}'
@@ -85,18 +85,26 @@ def probability_block(probability: float, band: str) -> str:
 # ---------------------------------------------------------------------------
 
 def info_panel(text: str, kind: str = "info") -> None:
-    colours = {
-        "info": styles.INFO,
-        "success": styles.SUCCESS,
-        "warning": styles.WARNING,
-        "danger": styles.DANGER,
+    """Tinted information panel. `kind` in {info, success, warning, danger}."""
+    tints = {
+        "info": (styles.INFO, styles.INFO_SOFT),
+        "success": (styles.SUCCESS, styles.SUCCESS_SOFT),
+        "warning": (styles.WARNING, styles.WARNING_SOFT),
+        "danger": (styles.DANGER, styles.DANGER_SOFT),
     }
-    colour = colours.get(kind, styles.INFO)
+    colour, bg = tints.get(kind, tints["info"])
     st.markdown(
         f"""
-        <div style="border-left: 4px solid {colour}; background: {styles.SURFACE_ALT};
-                    padding: 12px 16px; border-radius: 8px; color: {styles.NAVY};
-                    font-size: 14px; line-height: 1.55;">{text}</div>
+        <div style="
+            border-left: 4px solid {colour};
+            background: {bg};
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: {styles.NAVY};
+            font-size: 14px;
+            line-height: 1.55;
+            margin: 8px 0;
+        ">{text}</div>
         """,
         unsafe_allow_html=True,
     )

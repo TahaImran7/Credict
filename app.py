@@ -56,12 +56,19 @@ PAGES = {
 with st.sidebar:
     st.markdown(
         f"""
-        <div style="padding: 6px 4px 18px 4px;">
-            <div style="font-size: 22px; font-weight: 700; color: {styles.NAVY};
-                        letter-spacing: -0.02em;">CreditLens</div>
-            <div style="color: {styles.MUTED}; font-size: 12px; margin-top: 2px;">
-                Explainable AI Credit Risk
-            </div>
+        <div style="padding: 10px 6px 22px 6px;">
+            <div style="
+                font-size: 22px;
+                font-weight: 700;
+                color: {styles.SIDEBAR_TEXT};
+                letter-spacing: -0.02em;
+            ">CreditLens</div>
+            <div style="
+                color: {styles.SIDEBAR_TEXT_MUTED};
+                font-size: 12px;
+                margin-top: 4px;
+                letter-spacing: 0.02em;
+            ">Explainable AI Credit Risk</div>
         </div>
         """,
         unsafe_allow_html=True,
