@@ -1,0 +1,296 @@
+"""
+Report and export utilities for CreditLens.
+
+Everything returns bytes (CSV or JSON) so the Streamlit UI can hand the
+payload directly to st.download_button without touching the filesystem.
+
+A convenience function write_to_disk() is provided for command-line use.
+
+PDF export is intentionally deferred (spec §10): a reliable CSV/JSON
+export is delivered first.
+"""
+
+import csv
+import io
+import json
+from dataclasses import asdict, is_dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Mapping
+
+import numpy as np
+import pandas as pd
+
+from config import settings
+from src.utils.logging_config import get_logger
+from src.utils.paths import PROJECT_ROOT
+
+log = get_logger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _timestamp_utc() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+def _to_jsonable(obj: Any) -> Any:
+    """
+    Recursively convert common Python / numpy / pandas / arbitrary objects
+    into JSON-safe primitives.
+
+    Handles:
+      - dataclasses (via asdict)
+      - generic objects with a public __dict__ (via vars)
+      - mappings, sequences, numpy scalars and arrays
+      - pandas Series / DataFrame
+      - Path, NaN (converted to None)
+    """
+    # Fast-path primitives
+    if obj is None or isinstance(obj, (str, bool, int)):
+        return obj
+    if isinstance(obj, float):
+        return None if np.isnan(obj) else obj
+
+    # Dataclasses (checked before Mapping so a dataclass that is also a
+    # Mapping subclass is expanded as a dataclass first)
+    if is_dataclass(obj) and not isinstance(obj, type):
+        return {k: _to_jsonable(v) for k, v in asdict(obj).items()}
+
+    # Mappings
+    if isinstance(obj, Mapping):
+        return {str(k): _to_jsonable(v) for k, v in obj.items()}
+
+    # Sequences (exclude str/bytes, already handled above)
+    if isinstance(obj, (list, tuple, set, frozenset)):
+        return [_to_jsonable(v) for v in obj]
+
+    # NumPy
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, np.floating):
+        v = float(obj)
+        return None if np.isnan(v) else v
+    if isinstance(obj, np.integer):
+        return int(obj)
+    if isinstance(obj, np.bool_):
+        return bool(obj)
+
+    # Pandas
+    if isinstance(obj, pd.DataFrame):
+        return obj.to_dict(orient="records")
+    if isinstance(obj, pd.Series):
+        return obj.tolist()
+
+    # Path
+    if isinstance(obj, Path):
+        return str(obj)
+
+    # Generic object with a public __dict__ (test doubles, simple classes)
+    if hasattr(obj, "__dict__"):
+        return {
+            k: _to_jsonable(v)
+            for k, v in vars(obj).items()
+            if not k.startswith("_")
+        }
+
+    # Last-resort string representation
+    return str(obj)
+
+
+def _csv_bytes(df: pd.DataFrame) -> bytes:
+    buf = io.StringIO()
+    df.to_csv(buf, index=False, quoting=csv.QUOTE_MINIMAL)
+    return buf.getvalue().encode("utf-8")
+
+
+def _json_bytes(payload: Any) -> bytes:
+    text = json.dumps(_to_jsonable(payload), indent=2, ensure_ascii=False)
+    return text.encode("utf-8")
+
+
+# ---------------------------------------------------------------------------
+# Reports
+# ---------------------------------------------------------------------------
+
+def prediction_report_json(
+    prediction: Any,
+    explanation: Any | None = None,
+    top_k: int = 5,
+) -> bytes:
+    """
+    Build a JSON report for a single prediction, optionally with its SHAP
+    explanation.
+
+    Parameters
+    ----------
+    prediction : src.prediction.predictor.PredictionResult (or compatible object/dict)
+    explanation : src.explainability.shap_explainer.ShapExplanation, optional
+    top_k : number of top SHAP contributors to include
+    """
+    pred_dict = _to_jsonable(prediction)
+    if not isinstance(pred_dict, dict):
+        raise TypeError(
+            f"prediction must serialise to a dict, got {type(pred_dict).__name__}."
+        )
+
+    payload: dict[str, Any] = {
+        "report_type": "individual_prediction",
+        "generated_utc": _timestamp_utc(),
+        "model": pred_dict.get("model_name"),
+        "prediction": pred_dict,
+    }
+
+    if explanation is not None:
+        top = getattr(explanation, "top_contributors", None)
+        payload["explanation"] = {
+            "base_value": _to_jsonable(getattr(explanation, "base_value", None)),
+            "top_contributors": _to_jsonable(top(n=top_k)) if callable(top) else [],
+            "notes": [
+                "SHAP describes how features contribute to the model's output "
+                "under its explanation framework.",
+                "SHAP does not establish causality.",
+            ],
+        }
+
+    payload["disclaimer"] = (
+        "This report is generated by an academic decision-support prototype. "
+        "It is not a lending decision and must not be used to approve or "
+        "reject a real applicant."
+    )
+    return _json_bytes(payload)
+
+
+def prediction_report_csv(prediction: Any) -> bytes:
+    """Single-row CSV for a prediction result."""
+    d = _to_jsonable(prediction)
+    if not isinstance(d, dict):
+        raise TypeError(
+            f"prediction must serialise to a dict, got {type(d).__name__}."
+        )
+    df = pd.DataFrame([d])
+    df.insert(0, "generated_utc", _timestamp_utc())
+    return _csv_bytes(df)
+
+
+def whatif_report_csv(result: Any) -> bytes:
+    """
+    CSV with one row per change plus a summary row block at the end.
+    """
+    changes = _to_jsonable(getattr(result, "changes", []) or [])
+    rows = []
+    for c in changes:
+        if not isinstance(c, dict):
+            c = _to_jsonable(c)
+        rows.append({
+            "feature": c.get("feature"),
+            "original": c.get("original"),
+            "new": c.get("new"),
+        })
+    df = pd.DataFrame(rows)
+
+    summary = pd.DataFrame([{
+        "feature": "__SUMMARY__",
+        "original": _to_jsonable(getattr(result, "original_probability", None)),
+        "new": _to_jsonable(getattr(result, "modified_probability", None)),
+        "difference_pp": _to_jsonable(getattr(result, "difference_pp", None)),
+        "original_band": getattr(result, "original_band", None),
+        "modified_band": getattr(result, "modified_band", None),
+        "direction": getattr(result, "direction", None),
+        "model": getattr(result, "model_name", None),
+        "generated_utc": _timestamp_utc(),
+    }])
+
+    out = pd.concat([df, summary], ignore_index=True) if not df.empty else summary
+    return _csv_bytes(out)
+
+
+def comparison_report_csv(comparison_df: pd.DataFrame) -> bytes:
+    """CSV for the model-comparison table (index preserved as a column)."""
+    df = comparison_df.reset_index()
+    df.insert(0, "generated_utc", _timestamp_utc())
+    return _csv_bytes(df)
+
+
+def fairness_report_csv(
+    metrics_df: pd.DataFrame,
+    differences_df: pd.DataFrame | None = None,
+    limitation_text: str | None = None,
+) -> bytes:
+    """
+    CSV containing the audit metrics. If a differences table is provided it
+    is appended with a leading blank separator row and a section header.
+    """
+    out = metrics_df.copy()
+    if "generated_utc" not in out.columns:
+        out.insert(0, "generated_utc", _timestamp_utc())
+
+    if differences_df is not None and not differences_df.empty:
+        # Separator row with the same columns as `out`; label goes in the
+        # second column so the first column can hold an empty timestamp.
+        sep = pd.DataFrame([{c: "" for c in out.columns}])
+        if len(out.columns) > 1:
+            sep.iloc[0, 1] = "--- differences from reference ---"
+
+        diffs = differences_df.copy()
+        for c in out.columns:
+            if c not in diffs.columns:
+                diffs[c] = ""
+        diffs = diffs[out.columns].copy()
+
+        out = pd.concat([out, sep, diffs], ignore_index=True)
+    return _csv_bytes(out)
+
+
+def fairness_report_json(
+    metrics_df: pd.DataFrame,
+    differences_df: pd.DataFrame | None = None,
+    warnings: list[str] | None = None,
+    limitation_text: str | None = None,
+) -> bytes:
+    payload = {
+        "report_type": "fairness_audit",
+        "generated_utc": _timestamp_utc(),
+        "metrics": _to_jsonable(metrics_df),
+        "differences_from_reference": _to_jsonable(differences_df)
+                                      if differences_df is not None else None,
+        "warnings": warnings or [],
+        "limitations": limitation_text or (
+            "Group-level metrics describe model behaviour on the evaluated "
+            "sample. They do not prove or disprove discrimination and do not "
+            "certify legal compliance."
+        ),
+    }
+    return _json_bytes(payload)
+
+
+def model_metadata_json(
+    metrics: dict,
+    notes: list[str] | None = None,
+) -> bytes:
+    payload = {
+        "report_type": "model_metadata",
+        "generated_utc": _timestamp_utc(),
+        "seed": settings.RANDOM_SEED,
+        "test_size": settings.TEST_SIZE,
+        "target_column": settings.TARGET_COLUMN,
+        "risk_bands": settings.RISK_BANDS,
+        "metrics": _to_jsonable(metrics),
+        "notes": notes or [],
+    }
+    return _json_bytes(payload)
+
+
+# ---------------------------------------------------------------------------
+# Convenience for CLI usage
+# ---------------------------------------------------------------------------
+
+def write_to_disk(payload: bytes, relative_path: str) -> Path:
+    """Write a payload under PROJECT_ROOT and return the absolute path."""
+    path = PROJECT_ROOT / relative_path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(payload)
+    log.info("Wrote %d bytes to %s", len(payload), path)
+    return path
