@@ -1,125 +1,111 @@
 """
-CreditLens — Phase 1 verification dashboard.
+CreditLens — main application entry point.
 
-Purpose (Phase 1 only):
-    - Confirm the environment installs and imports cleanly.
-    - Confirm the project folder structure exists and is writable.
-    - Confirm path, settings, and logging modules behave correctly.
-
-The real 8-section dashboard is built in Phase 7.
+Run from the project root:
+    streamlit run app.py
 """
 
-import os
-import sys
-import platform
-from pathlib import Path
-
-import pandas as pd
-import numpy as np
-import sklearn
 import streamlit as st
 
-from src.utils.paths import (
-    PROJECT_ROOT,
-    RAW_DATA_DIR,
-    PROCESSED_DATA_DIR,
-    SAVED_MODELS_DIR,
-    EVALUATION_DIR,
-    ensure_directories,
+from ui import styles
+from ui import _cache
+from ui import (
+    overview,
+    risk_assessment,
+    simulator,
+    model_performance,
+    explainability,
+    portfolio_analytics,
+    fairness_audit,
+    reports,
 )
-from src.utils.logging_config import get_logger
-from config import settings
-
-log = get_logger(__name__)
 
 
-def _writable(path: Path) -> bool:
-    """Return True if the directory exists and is writable by this process."""
-    return path.is_dir() and os.access(path, os.W_OK)
-
-
+# ---------------------------------------------------------------------------
+# Page config must be the first Streamlit call.
+# ---------------------------------------------------------------------------
 st.set_page_config(
-    page_title="CreditLens — Phase 1 Verification",
+    page_title="CreditLens",
     page_icon=None,
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-st.title("CreditLens — Phase 1 Verification")
-st.caption(
-    "Environment and skeleton check. The full credit-risk dashboard is "
-    "implemented in later phases."
-)
 
 # ---------------------------------------------------------------------------
-# 1. Environment
+# Inject the design system once.
 # ---------------------------------------------------------------------------
-st.header("1. Environment")
+styles.inject()
 
-env_table = pd.DataFrame(
-    {
-        "Item": [
-            "Python version",
-            "Operating system",
-            "Project root",
-            "pandas",
-            "numpy",
-            "scikit-learn",
-            "streamlit",
-        ],
-        "Value": [
-            sys.version.split()[0],
-            f"{platform.system()} {platform.release()}",
-            str(PROJECT_ROOT),
-            pd.__version__,
-            np.__version__,
-            sklearn.__version__,
-            st.__version__,
-        ],
-    }
-)
-st.dataframe(env_table, use_container_width=True, hide_index=True)
 
 # ---------------------------------------------------------------------------
-# 2. Folder structure
+# Sidebar
 # ---------------------------------------------------------------------------
-st.header("2. Folder structure")
+PAGES = {
+    "Overview": overview.render,
+    "Risk Assessment": risk_assessment.render,
+    "What-if Simulator": simulator.render,
+    "Model Performance": model_performance.render,
+    "Explainability": explainability.render,
+    "Portfolio Analytics": portfolio_analytics.render,
+    "Fairness Audit": fairness_audit.render,
+    "Reports": reports.render,
+}
 
+
+with st.sidebar:
+    st.markdown(
+        f"""
+        <div style="padding: 6px 4px 18px 4px;">
+            <div style="font-size: 22px; font-weight: 700; color: {styles.NAVY};
+                        letter-spacing: -0.02em;">CreditLens</div>
+            <div style="color: {styles.MUTED}; font-size: 12px; margin-top: 2px;">
+                Explainable AI Credit Risk
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    page = st.radio(
+        "Navigation",
+        options=list(PAGES.keys()),
+        label_visibility="collapsed",
+    )
+
+    st.markdown("---")
+
+    with st.expander("Session"):
+        if st.button("Clear cached data", use_container_width=True):
+            _cache.clear_all_caches()
+            st.success("Caches cleared.")
+        st.caption(
+            "Clears in-memory caches. The application does not retrain "
+            "models automatically."
+        )
+
+    st.caption(
+        "Academic decision-support prototype. Not a lending authority."
+    )
+
+
+# ---------------------------------------------------------------------------
+# Dispatch
+# ---------------------------------------------------------------------------
 try:
-    ensure_directories()
-    dirs = {
-        "data/raw": RAW_DATA_DIR,
-        "data/processed": PROCESSED_DATA_DIR,
-        "models/saved": SAVED_MODELS_DIR,
-        "models/evaluation": EVALUATION_DIR,
-    }
-    struct_rows = [
-        {
-            "Folder": label,
-            "Exists": path.is_dir(),
-            "Writable": _writable(path),
-        }
-        for label, path in dirs.items()
-    ]
-    st.dataframe(pd.DataFrame(struct_rows), use_container_width=True, hide_index=True)
+    PAGES[page]()
+except FileNotFoundError as exc:
+    st.error(f"Missing artefact: {exc}")
+    st.info(
+        "Run the phase scripts in this order:\n"
+        "1. `python -c \"from src.data.loader import download_dataset; download_dataset()\"`\n"
+        "2. `python -m scripts.prepare_data`\n"
+        "3. `python -m scripts.train_models`\n"
+        "4. `python -m scripts.build_dashboard_artifacts`\n"
+        "5. `python -m scripts.run_fairness_audit`"
+    )
 except Exception as exc:
-    st.error(f"Folder check failed: {exc}")
-    log.exception("Folder verification failed")
-
-# ---------------------------------------------------------------------------
-# 3. Configuration
-# ---------------------------------------------------------------------------
-st.header("3. Configuration")
-st.json(
-    {
-        "RANDOM_SEED": settings.RANDOM_SEED,
-        "TARGET_COLUMN_CANDIDATES": list(settings.TARGET_COLUMN_CANDIDATES),
-        "POSITIVE_CLASS_LABEL": settings.POSITIVE_CLASS_LABEL,
-        "NEGATIVE_CLASS_LABEL": settings.NEGATIVE_CLASS_LABEL,
-        "TEST_SIZE": settings.TEST_SIZE,
-        "RISK_BANDS": settings.RISK_BANDS,
-    }
-)
-
-st.success(
-    "Phase 1 verification passed. Awaiting Phase 2 (dataset integration)."
-)
+    st.error(f"Unexpected error: {exc}")
+    with st.expander("Details"):
+        import traceback
+        st.code(traceback.format_exc())
