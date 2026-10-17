@@ -2,10 +2,10 @@
 
 import streamlit as st
 
-from src.explainability.shap_explainer import explain_single, global_importance
+from src.explainability.shap_explainer import explain_single
 from src.prediction.predictor import DEFAULT_MODEL_NAME, predict_single
 from ui import components as c
-from ui import charts, styles
+from ui import charts
 from ui import _cache
 
 
@@ -19,29 +19,20 @@ def render() -> None:
         _cache.get_model(DEFAULT_MODEL_NAME)
         importance = _cache.get_global_importance()
     except FileNotFoundError as exc:
-        c.error_panel(
-            str(exc),
-            "python -m scripts.build_dashboard_artifacts",
-        )
+        c.error_panel(str(exc), "python -m scripts.build_dashboard_artifacts")
         return
 
-    # ---- Global importance ----------------------------------------------
     c.section_header(
         "Global feature importance",
-        "Mean absolute SHAP value across the full test set. Higher means the "
-        "feature moves the model's output more on average.",
+        "Mean absolute SHAP value across the full test set.",
     )
     top_n = st.slider("How many features to display", 5, 23, 15, key="expl_topn")
-    st.plotly_chart(
-        charts.global_importance_bar(importance, top_n=top_n),
-        use_container_width=True,
-        config={"displayModeBar": False},
-    )
+    st.plotly_chart(charts.global_importance_bar(importance, top_n=top_n),
+                    use_container_width=True, config={"displayModeBar": False})
 
     with st.expander("Full importance table"):
-        st.dataframe(importance, use_container_width=True, hide_index=True)
+        c.data_table(importance, precision=4)
 
-    # ---- Individual explanation -----------------------------------------
     c.section_header(
         "Individual explanation",
         "Enter a customer record and see which features pushed the estimate up or down.",
@@ -50,8 +41,7 @@ def render() -> None:
     mode = st.radio(
         "Input source",
         options=["Manual entry", "Load from dataset"],
-        horizontal=True, label_visibility="collapsed",
-        key="expl_mode",
+        horizontal=True, label_visibility="collapsed", key="expl_mode",
     )
 
     default_record = None
@@ -105,7 +95,5 @@ def render() -> None:
 
     c.disclaimer(
         "SHAP explains how the model used each feature under its own "
-        "explanation framework. It does not prove causality and does not "
-        "state why a real person would or would not default. Correlation "
-        "between features is not resolved by SHAP."
+        "explanation framework. It does not prove causality."
     )

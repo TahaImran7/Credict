@@ -169,7 +169,23 @@ def get_fairness() -> tuple[pd.DataFrame, pd.DataFrame]:
         raise FileNotFoundError(
             "Fairness files missing. Run: python -m scripts.run_fairness_audit"
         )
-    return _load_fairness_metrics_cached(_mtime(mp), _mtime(dp))
+    m, d = _load_fairness_metrics_cached(_mtime(mp), _mtime(dp))
+
+    if "n" in m.columns:
+        m = m[m["n"].notna()].reset_index(drop=True)
+
+    if "small_group" in m.columns:
+        m["small_group"] = (
+            m["small_group"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .map({"true": True, "false": False})
+            .fillna(False)
+            .astype(bool)
+        )
+
+    return m, d
 
 
 def clear_all_caches() -> None:

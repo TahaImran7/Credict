@@ -1,6 +1,5 @@
 """Fairness audit page."""
 
-import pandas as pd
 import streamlit as st
 
 from src.reporting.report_generator import (
@@ -8,7 +7,7 @@ from src.reporting.report_generator import (
 )
 from src.fairness.audit import FAIRNESS_LIMITATION
 from ui import components as c
-from ui import charts, styles
+from ui import charts
 from ui import _cache
 
 
@@ -30,7 +29,6 @@ def render() -> None:
         "audit answer different questions. This page is the latter.",
     )
 
-    # ---- Pick a dimension -----------------------------------------------
     audits = sorted(metrics_df["audit"].unique())
     audit = st.selectbox("Audit dimension", audits, key="fair_audit")
     sub_metrics = metrics_df[metrics_df["audit"] == audit].copy()
@@ -43,7 +41,6 @@ def render() -> None:
         kind="info",
     )
 
-    # ---- Metrics table --------------------------------------------------
     c.section_header("Group metrics")
     display_cols = [
         "group", "n", "n_positive", "n_negative", "prevalence",
@@ -51,10 +48,8 @@ def render() -> None:
         "small_group",
     ]
     present = [col for col in display_cols if col in sub_metrics.columns]
-    st.dataframe(sub_metrics[present].round(4), use_container_width=True,
-                 hide_index=True)
+    c.data_table(sub_metrics[present], precision=4)
 
-    # ---- Metric selection & charts --------------------------------------
     c.section_header("Group comparison")
     available_metrics = [m for m in (
         "tpr", "fpr", "precision", "npv", "f1", "accuracy", "roc_auc",
@@ -73,30 +68,29 @@ def render() -> None:
             st.plotly_chart(diff_chart, use_container_width=True,
                             config={"displayModeBar": False})
 
-    # ---- Differences table ----------------------------------------------
     c.section_header("Differences from reference")
-    st.dataframe(sub_diffs.round(4), use_container_width=True, hide_index=True)
+    c.data_table(sub_diffs, precision=4)
 
-    # ---- Warnings -------------------------------------------------------
     warnings = []
     if "small_group" in sub_metrics.columns:
-        small = sub_metrics[sub_metrics["small_group"]]["group"].tolist()
+        mask = sub_metrics["small_group"].fillna(False).astype(bool)
+        small = sub_metrics.loc[mask, "group"].tolist()
         if small:
             warnings.append(
-                f"Groups with fewer than {int(30)} records: {small}. "
+                f"Groups with fewer than 30 records: {small}. "
                 "Their metrics may be unstable."
             )
-    no_pos = sub_metrics[sub_metrics["n_positive"] == 0]["group"].tolist() \
-        if "n_positive" in sub_metrics.columns else []
-    if no_pos:
-        warnings.append(
-            f"Groups with no default cases: {no_pos}. TPR and precision are "
-            "undefined for these groups."
-        )
+    if "n_positive" in sub_metrics.columns:
+        no_pos_mask = (sub_metrics["n_positive"] == 0).fillna(False)
+        no_pos = sub_metrics.loc[no_pos_mask, "group"].tolist()
+        if no_pos:
+            warnings.append(
+                f"Groups with no default cases: {no_pos}. TPR and precision "
+                "are undefined for these groups."
+            )
     for w in warnings:
         c.info_panel(w, kind="warning")
 
-    # ---- Downloads ------------------------------------------------------
     st.markdown("")
     c1, c2 = st.columns(2)
     with c1:

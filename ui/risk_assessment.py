@@ -78,6 +78,9 @@ def render() -> None:
             explanation = explain_single(record, model_name=DEFAULT_MODEL_NAME)
             st.session_state["ra_result"] = prediction
             st.session_state["ra_explanation"] = explanation
+        # Rerun immediately so the "Clear result" button (rendered above,
+        # before state was set) appears on the next pass.
+        st.rerun()
 
     if "ra_result" not in st.session_state:
         c.info_panel(
@@ -89,7 +92,6 @@ def render() -> None:
     result = st.session_state["ra_result"]
     explanation = st.session_state["ra_explanation"]
 
-    # ---- Result card -----------------------------------------------------
     st.markdown("---")
     left, right = st.columns([1, 1])
 
@@ -118,7 +120,6 @@ def render() -> None:
             unsafe_allow_html=True,
         )
 
-    # ---- SHAP explanation -----------------------------------------------
     c.section_header(
         "Why the model produced this estimate",
         "SHAP values describe how each feature contributes to the model's "
@@ -157,7 +158,6 @@ def render() -> None:
             unsafe_allow_html=True,
         )
 
-    # ---- Downloads -------------------------------------------------------
     st.markdown("")
     st.markdown("**Download this assessment**")
     c1, c2 = st.columns(2)

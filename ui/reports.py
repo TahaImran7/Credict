@@ -3,13 +3,11 @@
 import streamlit as st
 
 from src.reporting.report_generator import (
-    comparison_report_csv,
-    fairness_report_csv, fairness_report_json,
+    comparison_report_csv, fairness_report_csv, fairness_report_json,
     model_metadata_json,
 )
 from src.fairness.audit import FAIRNESS_LIMITATION
 from ui import components as c
-from ui import styles
 from ui import _cache
 
 
@@ -26,7 +24,6 @@ def render() -> None:
         "page. This page collects the aggregate exports.",
     )
 
-    # ---- Model metadata -------------------------------------------------
     c.section_header("Model metadata")
     try:
         comparison = _cache.get_comparison()
@@ -49,9 +46,8 @@ def render() -> None:
         mime="application/json",
     )
 
-    # ---- Comparison CSV -------------------------------------------------
     c.section_header("Model comparison")
-    st.dataframe(comparison.round(4), use_container_width=True, hide_index=False)
+    c.data_table(comparison.reset_index(), precision=4)
     st.download_button(
         "Download comparison CSV",
         data=comparison_report_csv(comparison),
@@ -59,13 +55,13 @@ def render() -> None:
         mime="text/csv",
     )
 
-    # ---- Fairness exports -----------------------------------------------
     c.section_header("Fairness audit exports")
     try:
         metrics_df, diffs_df = _cache.get_fairness()
     except FileNotFoundError:
         c.info_panel(
-            "Fairness files not found. Run: <code>python -m scripts.run_fairness_audit</code>",
+            "Fairness files not found. Run: "
+            "<code>python -m scripts.run_fairness_audit</code>",
             kind="warning",
         )
     else:
@@ -90,6 +86,5 @@ def render() -> None:
 
     c.disclaimer(
         "Every export reflects the current state of the application's models, "
-        "splits, and evaluation artefacts. If you retrain or re-run the audit "
-        "scripts, new exports will reflect the updated results."
+        "splits, and evaluation artefacts."
     )

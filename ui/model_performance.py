@@ -1,11 +1,10 @@
 """Model performance page."""
 
-import pandas as pd
 import streamlit as st
 
 from src.reporting.report_generator import comparison_report_csv
 from ui import components as c
-from ui import charts, styles
+from ui import charts
 from ui import _cache
 
 
@@ -24,7 +23,6 @@ def render() -> None:
 
     models = list(comparison.index)
 
-    # ---- Comparison table -----------------------------------------------
     c.section_header("Comparison summary")
     display = comparison.reset_index().rename(columns={
         "model": "Model", "accuracy": "Accuracy", "precision": "Precision",
@@ -33,7 +31,7 @@ def render() -> None:
         "n_test": "Test n", "n_positive": "Positives", "threshold": "Threshold",
     })
     display["Model"] = display["Model"].str.replace("_", " ").str.title()
-    st.dataframe(display.round(4), use_container_width=True, hide_index=True)
+    c.data_table(display, precision=4)
 
     st.download_button(
         "Download comparison CSV",
@@ -42,7 +40,6 @@ def render() -> None:
         mime="text/csv",
     )
 
-    # ---- Curves ---------------------------------------------------------
     c.section_header("ROC, precision-recall, and calibration")
     evaluations = {m: _cache.get_evaluation(m) for m in models}
 
@@ -72,7 +69,6 @@ def render() -> None:
         use_container_width=True, config={"displayModeBar": False},
     )
 
-    # ---- Confusion matrices ---------------------------------------------
     c.section_header("Confusion matrices")
     cols = st.columns(len(models))
     for col, m in zip(cols, models):
@@ -85,40 +81,26 @@ def render() -> None:
                 use_container_width=True, config={"displayModeBar": False},
             )
 
-    # ---- Metric explanations --------------------------------------------
     c.section_header("What the metrics mean in financial terms")
     st.markdown(
         """
 **Accuracy** — share of test customers whose outcome was classified correctly.
-Can be misleading when classes are imbalanced; the majority class alone is
-about 78% of the data.
 
-**Precision** — of the customers the model flagged as likely defaulters,
-what share actually defaulted. Low precision means more customers are
-incorrectly flagged.
+**Precision** — of the customers flagged as likely defaulters, what share actually defaulted.
 
 **Recall** — of the customers who did default, what share the model caught.
-Low recall means more defaults are missed.
 
-**F1** — harmonic mean of precision and recall. Useful when both matter.
+**F1** — harmonic mean of precision and recall.
 
-**ROC-AUC** — probability that a random defaulter is scored above a random
-non-defaulter. 0.5 is random; higher is better.
+**ROC-AUC** — probability that a random defaulter is scored above a random non-defaulter.
 
-**PR-AUC** — area under the precision-recall curve. More informative than
-ROC-AUC under class imbalance, and the primary selection metric here.
+**PR-AUC** — area under the precision-recall curve. More informative than ROC-AUC under class imbalance.
 
-**Brier score** — mean squared error of predicted probabilities. Lower is
-better; measures both discrimination and calibration.
-
-For lending policy, the correct trade-off between precision and recall
-depends on the cost of missed defaults versus the cost of wrongly rejecting
-creditworthy applicants. This dashboard does not decide that trade-off.
+**Brier score** — mean squared error of predicted probabilities. Lower is better.
         """
     )
 
     c.disclaimer(
         "Metrics are computed on a single stratified 20% hold-out split with "
-        "random seed 42. They will vary slightly if the split changes. No "
-        "hyperparameter was tuned on this test set."
+        "random seed 42. No hyperparameter was tuned on this test set."
     )

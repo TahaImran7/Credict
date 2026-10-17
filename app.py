@@ -1,8 +1,6 @@
 """
 CreditLens — main application entry point.
-
-Run from the project root:
-    streamlit run app.py
+Run: streamlit run app.py
 """
 
 import streamlit as st
@@ -10,20 +8,10 @@ import streamlit as st
 from ui import styles
 from ui import _cache
 from ui import (
-    overview,
-    risk_assessment,
-    simulator,
-    model_performance,
-    explainability,
-    portfolio_analytics,
-    fairness_audit,
-    reports,
+    overview, risk_assessment, simulator, model_performance,
+    explainability, portfolio_analytics, fairness_audit, reports,
 )
 
-
-# ---------------------------------------------------------------------------
-# Page config must be the first Streamlit call.
-# ---------------------------------------------------------------------------
 st.set_page_config(
     page_title="CreditLens",
     page_icon=None,
@@ -31,40 +19,35 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-
-# ---------------------------------------------------------------------------
-# Inject the design system once.
-# ---------------------------------------------------------------------------
-styles.inject()
+# --- Theme state ----------------------------------------------------------
+if "theme" not in st.session_state:
+    st.session_state.theme = "light"
 
 
-# ---------------------------------------------------------------------------
-# Sidebar
-# ---------------------------------------------------------------------------
-PAGES = {
-    "Overview": overview.render,
-    "Risk Assessment": risk_assessment.render,
-    "What-if Simulator": simulator.render,
-    "Model Performance": model_performance.render,
-    "Explainability": explainability.render,
-    "Portfolio Analytics": portfolio_analytics.render,
-    "Fairness Audit": fairness_audit.render,
-    "Reports": reports.render,
-}
+def _toggle_theme() -> None:
+    st.session_state.theme = (
+        "dark" if st.session_state.theme == "light" else "light"
+    )
 
 
+# --- Inject the correct stylesheet ---------------------------------------
+styles.inject(st.session_state.theme)
+
+# --- Sidebar --------------------------------------------------------------
 with st.sidebar:
+    p = styles.get_palette(st.session_state.theme)
+
     st.markdown(
         f"""
         <div style="padding: 10px 6px 22px 6px;">
             <div style="
                 font-size: 22px;
                 font-weight: 700;
-                color: {styles.SIDEBAR_TEXT};
+                color: {p['SIDEBAR_TEXT']};
                 letter-spacing: -0.02em;
             ">CreditLens</div>
             <div style="
-                color: {styles.SIDEBAR_TEXT_MUTED};
+                color: {p['SIDEBAR_TEXT_MUTED']};
                 font-size: 12px;
                 margin-top: 4px;
                 letter-spacing: 0.02em;
@@ -73,6 +56,24 @@ with st.sidebar:
         """,
         unsafe_allow_html=True,
     )
+
+    # Theme toggle
+    theme_label = "Switch to Dark Mode" if st.session_state.theme == "light" \
+        else "Switch to Light Mode"
+    st.button(theme_label, on_click=_toggle_theme, use_container_width=True)
+
+    st.markdown("---")
+
+    PAGES = {
+        "Overview": overview.render,
+        "Risk Assessment": risk_assessment.render,
+        "What-if Simulator": simulator.render,
+        "Model Performance": model_performance.render,
+        "Explainability": explainability.render,
+        "Portfolio Analytics": portfolio_analytics.render,
+        "Fairness Audit": fairness_audit.render,
+        "Reports": reports.render,
+    }
 
     page = st.radio(
         "Navigation",
@@ -91,14 +92,9 @@ with st.sidebar:
             "models automatically."
         )
 
-    st.caption(
-        "Academic decision-support prototype. Not a lending authority."
-    )
+    st.caption("Academic decision-support prototype. Not a lending authority.")
 
-
-# ---------------------------------------------------------------------------
-# Dispatch
-# ---------------------------------------------------------------------------
+# --- Dispatch -------------------------------------------------------------
 try:
     PAGES[page]()
 except FileNotFoundError as exc:
