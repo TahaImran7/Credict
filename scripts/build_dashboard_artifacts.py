@@ -1,12 +1,8 @@
 """
 Pre-compute dashboard artefacts for CreditLens.
 
-Run once after Phase 4 (or after retraining):
+Run once after Phase 3 (or after retraining):
     python -m scripts.build_dashboard_artifacts
-
-Writes:
-    models/evaluation/global_importance.csv
-    models/evaluation/test_predictions.csv
 """
 
 import numpy as np
@@ -16,7 +12,9 @@ from config import settings
 from src.analytics.portfolio import model_risk_bands_for
 from src.data import preprocessing as pp
 from src.explainability.shap_explainer import global_importance
-from src.prediction.predictor import DEFAULT_MODEL_NAME, predict_batch
+from src.prediction.predictor import (
+    DEFAULT_MODEL_NAME, SHAP_MODEL_NAME, predict_batch,
+)
 from src.utils.logging_config import get_logger
 from src.utils.paths import EVALUATION_DIR
 
@@ -28,18 +26,17 @@ def main() -> None:
 
     _, X_test, _, y_test = pp.load_splits()
 
-    # 1. Global SHAP importance on the full test set
-    #    (cached: this is the slow step)
+    # 1. Global SHAP importance — uses RAW RF (TreeExplainer requires raw tree)
     log.info("Computing global SHAP importance on %d rows...", len(X_test))
     importance = global_importance(
-        X_test, model_name=DEFAULT_MODEL_NAME,
+        X_test, model_name=SHAP_MODEL_NAME,
         max_samples=len(X_test),
     )
     path = EVALUATION_DIR / "global_importance.csv"
     importance.to_csv(path, index=False)
     log.info("Wrote %s (%d rows)", path, len(importance))
 
-    # 2. Test-set predictions for portfolio analytics
+    # 2. Test-set predictions — uses CALIBRATED model (for display + analytics)
     probs = predict_batch(X_test, model_name=DEFAULT_MODEL_NAME)
     bands_df = model_risk_bands_for(X_test, model_name=DEFAULT_MODEL_NAME)
     pred_df = pd.DataFrame({

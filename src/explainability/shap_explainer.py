@@ -1,14 +1,19 @@
 """
 SHAP-based explanations for CreditLens.
 
-The fitted pipeline (preprocessor + classifier) is used directly:
-  - Preprocessing is applied to the input record.
-  - TreeExplainer explains the classifier on the preprocessed features.
-  - SHAP values are aggregated from one-hot expanded names back to the
-    original 23 feature names, so explanations are interpretable.
+Uses the RAW Random Forest classifier (not the calibrated wrapper) for
+TreeExplainer, which requires a tree-based estimator. If the model name
+points to a calibrated pipeline, it is transparently unwrapped.
 
-SHAP describes how features contribute to the model's output under its
-explanation framework. It does not establish causality.
+SHAP values describe contributions to the model's INTERNAL score (before
+isotonic calibration). The isotonic mapping is monotonic, so:
+- Feature ranking and relative importance are unchanged.
+- Signs (risk-increasing vs risk-decreasing) are unchanged.
+- Only the absolute magnitudes are rescaled relative to the display
+  probability.
+
+The `probability` returned in ShapExplanation is the calibrated
+probability from the full pipeline.
 """
 
 from dataclasses import dataclass, field
@@ -20,6 +25,7 @@ import shap
 
 from config import settings
 from src.prediction.predictor import DEFAULT_MODEL_NAME, _prepare_record
+from src.training.calibrate import unwrap
 from src.training.train import load_model
 from src.utils.logging_config import get_logger
 
@@ -38,11 +44,6 @@ class ShapExplanation:
     original_input_values: list = field(default_factory=list)
 
     def top_contributors(self, n: int = 5) -> list[dict]:
-        """
-        Return the n features with the largest |SHAP| contribution,
-        preserving sign so the caller can distinguish risk-increasing from
-        risk-decreasing contributions.
-        """
         pairs = list(zip(self.original_features, self.original_shap_values,
                          self.original_input_values))
         pairs.sort(key=lambda t: abs(t[1]), reverse=True)
@@ -57,15 +58,7 @@ class ShapExplanation:
         ]
 
 
-# ---------------------------------------------------------------------------
-# SHAP value extraction — defensive across shap versions
-# ---------------------------------------------------------------------------
-
 def _positive_class_shap(shap_values) -> np.ndarray:
-    """
-    Normalise TreeExplainer output for binary classification to a
-    (n_samples, n_features) array corresponding to the positive class.
-    """
     if isinstance(shap_values, list):
         return np.asarray(shap_values[1])
     arr = np.asarray(shap_values)
@@ -75,30 +68,16 @@ def _positive_class_shap(shap_values) -> np.ndarray:
 
 
 def _positive_class_base(expected_value) -> float:
-    """Extract the positive-class base value, defensively."""
     if isinstance(expected_value, (list, tuple, np.ndarray)):
         return float(expected_value[1])
     return float(expected_value)
 
 
-# ---------------------------------------------------------------------------
-# Name aggregation: expanded (num__X / cat__Y_Z) -> original feature name
-# ---------------------------------------------------------------------------
-
 def original_feature_from_expanded(expanded: str) -> str:
-    """
-    Map an expanded column name produced by ColumnTransformer back to the
-    original feature name.
-
-    num__LIMIT_BAL     -> LIMIT_BAL
-    cat__SEX_1         -> SEX
-    cat__PAY_0_2       -> PAY_0
-    """
     if expanded.startswith("num__"):
         return expanded[len("num__"):]
     if expanded.startswith("cat__"):
         rest = expanded[len("cat__"):]
-        # Match the longest categorical feature name that fits.
         matches = [c for c in settings.CATEGORICAL_FEATURES
                    if rest == c or rest.startswith(c + "_")]
         if matches:
@@ -111,9 +90,6 @@ def aggregate_by_original_feature(
     expanded_names: list[str],
     expanded_values: np.ndarray,
 ) -> tuple[list[str], list[float]]:
-    """
-    Sum SHAP values per original feature. Preserves order of first appearance.
-    """
     order: list[str] = []
     total: dict[str, float] = {}
     for name, val in zip(expanded_names, expanded_values):
@@ -125,23 +101,18 @@ def aggregate_by_original_feature(
     return order, [total[k] for k in order]
 
 
-# ---------------------------------------------------------------------------
-# Explainers
-# ---------------------------------------------------------------------------
-
 @lru_cache(maxsize=4)
 def _get_explainer(model_name: str) -> tuple[object, object, list[str]]:
     """
-    Cache (classifier, TreeExplainer, expanded_feature_names) per model name.
-    Building TreeExplainer over 200 trees is not free; caching matters for
-    Streamlit reruns in Phase 7.
+    Cache (raw_pipeline, TreeExplainer, expanded_feature_names) per model.
+    CalibratedPipeline wrappers are transparently unwrapped.
     """
-    pipeline = load_model(model_name)
+    model = load_model(model_name)
+    pipeline = unwrap(model)
     if "pre" not in pipeline.named_steps or "clf" not in pipeline.named_steps:
         raise ValueError(
             f"Model '{model_name}' is not a Pipeline with 'pre' and 'clf'."
         )
-    pre = pipeline.named_steps["pre"]
     clf = pipeline.named_steps["clf"]
     try:
         explainer = shap.TreeExplainer(clf)
@@ -150,12 +121,11 @@ def _get_explainer(model_name: str) -> tuple[object, object, list[str]]:
             f"SHAP TreeExplainer is not compatible with the '{model_name}' "
             f"classifier ({type(clf).__name__}). Details: {exc}"
         ) from exc
-    expanded_names = list(pre.get_feature_names_out())
+    expanded_names = list(pipeline.named_steps["pre"].get_feature_names_out())
     return pipeline, explainer, expanded_names
 
 
 def clear_explainer_cache() -> None:
-    """Explicit cache reset (useful in tests / after model retraining)."""
     _get_explainer.cache_clear()
 
 
@@ -163,7 +133,6 @@ def explain_single(
     record: dict | pd.Series | pd.DataFrame,
     model_name: str = DEFAULT_MODEL_NAME,
 ) -> ShapExplanation:
-    """Produce a SHAP explanation for one customer record."""
     pipeline, explainer, expanded_names = _get_explainer(model_name)
     X_row = _prepare_record(record)
     pre = pipeline.named_steps["pre"]
@@ -176,7 +145,10 @@ def explain_single(
     sv_row = sv[0]
 
     base_value = _positive_class_base(explainer.expected_value)
-    probability = float(pipeline.predict_proba(X_row)[0, 1])
+
+    # Calibrated probability from the full model (may be calibrated or raw)
+    full_model = load_model(model_name)
+    probability = float(full_model.predict_proba(X_row)[0, 1])
 
     orig_names, orig_values = aggregate_by_original_feature(expanded_names, sv_row)
     input_values = [X_row.iloc[0][name] for name in orig_names]
@@ -199,13 +171,6 @@ def global_importance(
     max_samples: int = 500,
     random_state: int = settings.RANDOM_SEED,
 ) -> pd.DataFrame:
-    """
-    Mean absolute SHAP value per original feature, computed on a random
-    subsample. Suitable for the UI's global-importance chart.
-
-    Returns a DataFrame sorted by importance descending with columns:
-        feature, mean_abs_shap
-    """
     pipeline, explainer, expanded_names = _get_explainer(model_name)
     if len(X_sample) > max_samples:
         X_used = X_sample.sample(max_samples, random_state=random_state)

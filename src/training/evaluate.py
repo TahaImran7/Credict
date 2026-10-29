@@ -1,8 +1,5 @@
 """
 Evaluation metrics, curves, and calibration data for CreditLens.
-
-Every metric is computed on the held-out test set. Nothing here inspects
-training data. Everything serialises to JSON for the dashboard.
 """
 
 import json
@@ -13,16 +10,9 @@ from typing import Any
 import numpy as np
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import (
-    accuracy_score,
-    average_precision_score,
-    brier_score_loss,
-    confusion_matrix,
-    f1_score,
-    precision_recall_curve,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-    roc_curve,
+    accuracy_score, average_precision_score, brier_score_loss,
+    confusion_matrix, f1_score, precision_recall_curve,
+    precision_score, recall_score, roc_auc_score, roc_curve,
 )
 
 from src.utils.logging_config import get_logger
@@ -31,26 +21,23 @@ log = get_logger(__name__)
 
 
 def _to_python(obj: Any) -> Any:
-    """Recursively convert numpy types to native Python for JSON."""
     if isinstance(obj, dict):
         return {k: _to_python(v) for k, v in obj.items()}
     if isinstance(obj, (list, tuple)):
         return [_to_python(v) for v in obj]
     if isinstance(obj, np.ndarray):
         return obj.tolist()
-    if isinstance(obj, (np.floating,)):
+    if isinstance(obj, np.floating):
         return float(obj)
-    if isinstance(obj, (np.integer,)):
+    if isinstance(obj, np.integer):
         return int(obj)
-    if isinstance(obj, (np.bool_,)):
+    if isinstance(obj, np.bool_):
         return bool(obj)
     return obj
 
 
 @dataclass
 class ModelEvaluation:
-    """All evaluation data for a single fitted model on a single test set."""
-
     model_name: str
     threshold: float
     n_samples: int
@@ -71,18 +58,17 @@ def evaluate_model(
     X_test,
     y_test,
     model_name: str,
-    threshold: float = 0.5,
+    threshold: float | None = None,
 ) -> ModelEvaluation:
     """
     Compute classification metrics, ROC/PR curves, and calibration data.
 
-    Parameters
-    ----------
-    model : fitted estimator with predict_proba
-    X_test, y_test : held-out test data (features in canonical order)
-    model_name : str
-    threshold : decision threshold for hard classification metrics
+    If `threshold` is None, uses `model.threshold` when available (for
+    CalibratedPipeline instances), otherwise falls back to 0.5.
     """
+    if threshold is None:
+        threshold = float(getattr(model, "threshold", 0.5))
+
     y_true = np.asarray(y_test).astype(int)
     y_prob = np.asarray(model.predict_proba(X_test))[:, 1]
     y_pred = (y_prob >= threshold).astype(int)
@@ -113,14 +99,8 @@ def evaluate_model(
         n_negative=int((y_true == 0).sum()),
         metrics=metrics,
         confusion_matrix=cm.tolist(),
-        roc_curve={
-            "fpr": fpr.tolist(),
-            "tpr": tpr.tolist(),
-        },
-        pr_curve={
-            "precision": prec.tolist(),
-            "recall": rec.tolist(),
-        },
+        roc_curve={"fpr": fpr.tolist(), "tpr": tpr.tolist()},
+        pr_curve={"precision": prec.tolist(), "recall": rec.tolist()},
         calibration={
             "mean_predicted": mean_pred.tolist(),
             "fraction_positive": frac_pos.tolist(),
@@ -128,12 +108,9 @@ def evaluate_model(
     )
 
     log.info(
-        "Evaluated %s: ROC-AUC=%.4f, PR-AUC=%.4f, F1=%.4f, Recall=%.4f",
-        model_name,
-        metrics["roc_auc"],
-        metrics["pr_auc"],
-        metrics["f1"],
-        metrics["recall"],
+        "Evaluated %s (threshold=%.3f): ROC-AUC=%.4f, PR-AUC=%.4f, Brier=%.4f",
+        model_name, threshold,
+        metrics["roc_auc"], metrics["pr_auc"], metrics["brier"],
     )
     return evaluation
 
