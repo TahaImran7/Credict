@@ -1,4 +1,4 @@
-# CreditLens — Pitch Deck
+# Credict — Pitch Deck
 
 **Format:** 10 slides
 **Target length:** 5–7 minutes speaking time + 3–5 min Q&A
@@ -14,12 +14,12 @@ highest. Slides 3, 5, 8, 9 carry the most weight.
 ## Slide 1 — Title
 
 **On slide:**
-- **CreditLens**
+- **Credict**
 - Explainable AI Credit Risk Assessment
 - Your name, roll number, date
 
 **Speaker notes:**
-> "CreditLens is an explainable AI credit-risk assessment platform. It
+> "Credict is an explainable AI credit-risk assessment platform. It
 > predicts next-month credit-card default probability and, crucially,
 > explains *why* — feature by feature. Built end-to-end in Python, runs
 > locally, 147 automated tests pass."
@@ -70,7 +70,7 @@ highest. Slides 3, 5, 8, 9 carry the most weight.
 > published accuracy of 79 to 83%. SHAP is the industry standard for
 > explainability. In Pakistan, SBP regulations require systematic credit
 > risk assessment but no local or open-source tool combines prediction
-> with explanation and fairness audit. That's the gap CreditLens fills."
+> with explanation and fairness audit. That's the gap Credict fills."
 
 **Time:** 45 seconds
 
@@ -79,7 +79,7 @@ highest. Slides 3, 5, 8, 9 carry the most weight.
 ## Slide 4 — Solution Overview
 
 **On slide:**
-- **CreditLens** — 8-page interactive dashboard
+- **Credict** — 8-page interactive dashboard
 - Predicts default probability with explanation
 - What-if simulator for scenario analysis
 - Model comparison (LR vs RF)
@@ -88,7 +88,7 @@ highest. Slides 3, 5, 8, 9 carry the most weight.
 - Runs locally, no cloud dependency
 
 **Speaker notes:**
-> "CreditLens is a full application, not a notebook. Eight pages: risk
+> "Credict is a full application, not a notebook. Eight pages: risk
 > assessment with SHAP-based explanation, what-if simulator, model
 > comparison, portfolio analytics, fairness audit, downloadable reports.
 > Runs entirely on the analyst's local machine — no data leaves the bank.
@@ -213,9 +213,9 @@ highest. Slides 3, 5, 8, 9 carry the most weight.
   friendly
 
 **Speaker notes:**
-> "What makes CreditLens distinct? FICO is accurate but opaque. SHAP is
+> "What makes Credict distinct? FICO is accurate but opaque. SHAP is
 > powerful but requires a data scientist. Fairlearn computes fairness
-> but doesn't integrate with prediction. CreditLens is the only tool
+> but doesn't integrate with prediction. Credict is the only tool
 > that combines all of it, locally deployable, into one interface that an
 > analyst can use without code. Crucially — we positioned it as
 > decision-support, not automated approval. That's regulator-friendly,

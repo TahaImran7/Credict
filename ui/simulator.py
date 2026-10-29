@@ -191,6 +191,6 @@ def render() -> None:
     st.download_button(
         "Download scenario CSV",
         data=whatif_report_csv(result),
-        file_name=f"creditlens_whatif_{result.modified_band.replace(' ','_')}.csv",
+        file_name=f"Credict_whatif_{result.modified_band.replace(' ','_')}.csv",
         mime="text/csv",
     )

@@ -1,5 +1,5 @@
 """
-CreditLens — main application entry point.
+Credict — main application entry point.
 Run: streamlit run app.py
 """
 
@@ -13,7 +13,7 @@ from ui import (
 )
 
 st.set_page_config(
-    page_title="CreditLens",
+    page_title="Credict",
     page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
@@ -45,7 +45,7 @@ with st.sidebar:
                 font-weight: 700;
                 color: {p['SIDEBAR_TEXT']};
                 letter-spacing: -0.02em;
-            ">CreditLens</div>
+            ">Credict</div>
             <div style="
                 color: {p['SIDEBAR_TEXT_MUTED']};
                 font-size: 12px;

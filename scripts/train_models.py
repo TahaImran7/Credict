@@ -23,7 +23,7 @@ log = get_logger(__name__)
 
 
 def main() -> None:
-    log.info("=== CreditLens Phase 3: model training with calibration ===")
+    log.info("=== Credict Phase 3: model training with calibration ===")
 
     X_train, X_test, y_train, y_test = pp.load_splits()
     log.info("Loaded splits: train=%d, test=%d", len(X_train), len(X_test))

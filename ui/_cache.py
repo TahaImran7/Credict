@@ -1,5 +1,5 @@
 """
-Cached data and model access for the CreditLens UI.
+Cached data and model access for the Credict UI.
 
 Every loader returns either a model (via st.cache_resource) or a DataFrame
 (via st.cache_data). Cache keys include file mtime so retraining or
@@ -189,7 +189,7 @@ def get_fairness() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def clear_all_caches() -> None:
-    """Clear every CreditLens cache. Call from the sidebar."""
+    """Clear every Credict cache. Call from the sidebar."""
     _load_model_cached.clear()
     _load_splits_cached.clear()
     _load_raw_cached.clear()

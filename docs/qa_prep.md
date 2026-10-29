@@ -1,4 +1,4 @@
-# CreditLens — Q&A Preparation
+# Credict — Q&A Preparation
 
 15 most likely judge questions with prepared answers. Rehearse each
 answer to 30–45 seconds.
@@ -38,7 +38,7 @@ game theory. It distributes a model's prediction among input features by
 computing each feature's average marginal contribution across all feature
 orderings. For tree-based models, Lundberg and Lee (2017) showed that
 TreeExplainer produces *exact* SHAP values in polynomial time. Every SHAP
-value in CreditLens comes from the official SHAP library's TreeExplainer,
+value in Credict comes from the official SHAP library's TreeExplainer,
 running on the actual deployed Random Forest. It's the same library used
 at Google, Microsoft, and most major banks."
 
@@ -76,7 +76,7 @@ set of 6,000 records is only used for final evaluation."
 **Answer:** "For a mid-size Pakistani bank with 500,000 credit-card
 customers at 2% default rate — that's 10,000 defaults per year — and an
 average exposure of PKR 150,000, the annual expected loss is roughly 1.5
-billion rupees. If CreditLens reduces defaults by even 2% relative —
+billion rupees. If Credict reduces defaults by even 2% relative —
 conservative, given published literature — that's PKR 30 million saved
 per year. The tool costs PKR 1.5 million per year on our proposed tier.
 ROI: over 1,900%. Detailed calculation is in `docs/feasibility_analysis.md`."
@@ -94,7 +94,7 @@ financial logic, not a signed contract."
 ### Q8. What's the total addressable market?
 
 **Answer:** "Global credit-scoring market is roughly USD 10–15 billion.
-But CreditLens targets Pakistan first — that's a serviceable addressable
+But Credict targets Pakistan first — that's a serviceable addressable
 market of 15 to 20 banks with active credit card portfolios. Realistic
 Year 1 target: 2 to 4 institutions. Break-even at our costs: 2–3
 customers. Adjacent markets: microfinance banks (about 11 licensed in
@@ -107,7 +107,7 @@ than competitors."
 
 ### Q9. Is this compliant with SBP regulations?
 
-**Answer:** "CreditLens is positioned as *decision-support*, not
+**Answer:** "Credict is positioned as *decision-support*, not
 automated decision-making. That's a deliberately safe framing: the model
 gives the analyst a probability and an explanation, but a human makes the
 actual credit decision. SBP's Prudential Regulations for Consumer
@@ -127,12 +127,12 @@ precision, NPV, ROC-AUC per group. Some groups show different metrics —
 for example, EDUCATION=4 has fewer than 100 records and unstable
 performance. That's flagged in the audit output, not hidden. SBP and other
 regulators increasingly want *auditable* AI, not *certified fair* AI.
-CreditLens provides the former. Certifying the latter would require a
+Credict provides the former. Certifying the latter would require a
 larger sample and legal review outside this project's scope."
 
 ### Q11. What about data privacy?
 
-**Answer:** "CreditLens runs entirely on the bank's local infrastructure.
+**Answer:** "Credict runs entirely on the bank's local infrastructure.
 No customer data leaves the machine — no cloud, no external API, no
 telemetry. That directly aligns with SBP's data localization requirements.
 The model artifacts are saved as local files; predictions are computed
@@ -143,7 +143,7 @@ sector."
 
 ## Limitations & Honesty
 
-### Q12. What can't CreditLens do?
+### Q12. What can't Credict do?
 
 **Answer:** "Several things, all documented in `docs/limitations.md`.
 First, the dataset is from a Taiwanese bank in 2005 — real Pakistani bank
@@ -176,7 +176,7 @@ for a commercial deployment."
 provide per-prediction explanations. For SBP compliance and internal
 audit, banks need to justify decisions; FICO doesn't help. Second, FICO
 is expensive — typically only large banks can afford it. Third, FICO
-isn't tuned to Pakistani customer data. CreditLens is explainable by
+isn't tuned to Pakistani customer data. Credict is explainable by
 design, deployable at lower cost, and retrainable on a bank's own data.
 We're not trying to replace FICO at HSBC — we're targeting mid-tier
 Pakistani banks and microfinance lenders who currently use rule-based

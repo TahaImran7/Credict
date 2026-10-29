@@ -165,7 +165,7 @@ def render() -> None:
         st.download_button(
             "Download JSON report",
             data=prediction_report_json(result, explanation, top_k=10),
-            file_name=f"creditlens_prediction_{result.timestamp_utc[:10]}.json",
+            file_name=f"Credict_prediction_{result.timestamp_utc[:10]}.json",
             mime="application/json",
             use_container_width=True,
         )
@@ -173,7 +173,7 @@ def render() -> None:
         st.download_button(
             "Download CSV summary",
             data=prediction_report_csv(result),
-            file_name=f"creditlens_prediction_{result.timestamp_utc[:10]}.csv",
+            file_name=f"Credict_prediction_{result.timestamp_utc[:10]}.csv",
             mime="text/csv",
             use_container_width=True,
         )

@@ -1,4 +1,4 @@
-# CreditLens — Financial Feasibility Analysis
+# Credict — Financial Feasibility Analysis
 
 **Document type:** Feasibility and business viability assessment
 **Prepared for:** FinTech Project Evaluation
@@ -13,7 +13,7 @@ project, the estimates are reasonable and defensible.
 
 ## 1. Executive Summary
 
-CreditLens is an explainable AI credit risk assessment platform. It predicts
+Credict is an explainable AI credit risk assessment platform. It predicts
 next-month payment default probability for credit card customers, explains
 each prediction using SHAP values, supports what-if scenario analysis, and
 audits model fairness across customer groups.
@@ -30,7 +30,7 @@ approximately **PKR 1.5 billion per year** in expected default losses
 (assuming a 2% default rate and average exposure of PKR 150,000). Even a
 **2% relative reduction** in defaults — conservative given published
 literature on AI credit scoring — would save **PKR 30 million per year**.
-CreditLens needs to save only a fraction of this to justify its cost.
+Credict needs to save only a fraction of this to justify its cost.
 
 ---
 
@@ -79,7 +79,7 @@ Realistic Year 1–2 target: **2–4 institutions** in Pakistan.
 - **Fintech lenders** — Pakistan's fintech sector includes several digital
   lending startups (verify: SECP NBFC registry)
 - **Credit bureaus** — companies like eCIB (SBP) provide the data side;
-  CreditLens complements, does not replace
+  Credict complements, does not replace
 
 ---
 
@@ -172,7 +172,7 @@ to-pay research (which would be part of a commercial Phase 2).*
 
 **Baseline annual expected loss: PKR 1.5 billion (~USD 5.4 million)**
 
-### 5.3 CreditLens impact scenarios
+### 5.3 Credict impact scenarios
 
 Based on published literature on AI credit scoring improvements (typically
 2–8% relative reduction in default rate at comparable accuracy levels),
@@ -195,7 +195,7 @@ bound of pure default-avoidance savings.*
 
 Conservative scenario:
 - **Annual savings**: PKR 30 million
-- **CreditLens cost** (Growth tier): PKR 1.5 million
+- **Credict cost** (Growth tier): PKR 1.5 million
 - **Net annual benefit**: PKR 28.5 million
 - **ROI**: **1,900%** (19× return on investment)
 
@@ -206,7 +206,7 @@ ROI is **233%** — still a compelling purchase.
 
 ## 6. Break-Even Analysis
 
-### 6.1 For the vendor (CreditLens as a business)
+### 6.1 For the vendor (Credict as a business)
 
 **Interpretation:** break-even requires signing **~2–3 customers in Year 1**
 to recover the build cost plus first-year operating cost, and **~2 customers
@@ -226,11 +226,11 @@ The deal pays for itself within the first year.
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| **Regulatory** — SBP does not approve AI-based credit scoring for automated decisions | Medium | High | Position CreditLens as **decision-support**, not decision-making. Human analyst remains in the loop. All predictions have explanation and disclaimer. |
+| **Regulatory** — SBP does not approve AI-based credit scoring for automated decisions | Medium | High | Position Credict as **decision-support**, not decision-making. Human analyst remains in the loop. All predictions have explanation and disclaimer. |
 | **Data privacy** — PII exposure during model training or inference | Medium | High | Local deployment (bank's servers). No customer data leaves the bank. Documented in technical spec. |
 | **Model drift** — Customer behaviour changes over time; model degrades | High | Medium | Retraining pipeline exists. Recommend quarterly retraining. Model monitoring is a Phase 2 feature. |
 | **Explainability trust** — Analysts don't trust SHAP explanations | Medium | Medium | Customer validation will test this. Report feedback honestly. |
-| **Competition** — Established vendors (FICO, Experian, local credit bureaus) dominate | High | High | CreditLens targets **explainability-first** positioning; FICO is a black box. Also targets institutions that can't afford FICO pricing. |
+| **Competition** — Established vendors (FICO, Experian, local credit bureaus) dominate | High | High | Credict targets **explainability-first** positioning; FICO is a black box. Also targets institutions that can't afford FICO pricing. |
 | **Adoption resistance** — Banks prefer existing processes | High | Medium | Position as augmentation, not replacement. Free trial period. |
 | **Model bias** — Fairness audit reveals concerning group-level disparities | Medium | Medium | Fairness audit is **built in**. This is a differentiator, not a weakness — most commercial tools hide these metrics. |
 
@@ -245,7 +245,7 @@ The deal pays for itself within the first year.
   have systematic credit risk assessment
 - **SBP's "Digital Prudential Regulations" (2018 onwards)** encourage
   digital tools but require explainability for regulatory review
-- **CreditLens directly supports** these requirements via SHAP-based
+- **Credict directly supports** these requirements via SHAP-based
   explanations
 - **Not yet addressed:** formal SBP approval for use in actual lending
   decisions. Would require a **Regulatory Sandbox** or **Innovation
@@ -255,7 +255,7 @@ The deal pays for itself within the first year.
 ### 8.2 Data localization
 
 - SBP requires certain banking data to remain within Pakistan
-- CreditLens is **locally deployable** — no cloud transmission required
+- Credict is **locally deployable** — no cloud transmission required
 - Aligns with SBP data localization guidance
 
 ### 8.3 Local competitive landscape
@@ -278,15 +278,15 @@ The deal pays for itself within the first year.
 
 ## 9. Comparison with Alternatives
 
-| Solution | Strengths | Weaknesses relative to CreditLens |
+| Solution | Strengths | Weaknesses relative to Credict |
 |---|---|---|
 | **Traditional scorecard (regression-based)** | Simple, regulator-friendly | Limited nonlinear pattern capture; lower accuracy on complex behavior |
 | **FICO / commercial black-box** | Proven track record | **No explainability**. Expensive. |
 | **Open-source models (no wrapper)** | Free | No UI, no explanation, no fairness audit |
 | **Manual analyst review** | Human judgment | Slow, inconsistent, expensive per decision |
-| **CreditLens** | Explainability + accuracy + fairness + local deployability | Still a prototype; needs production hardening |
+| **Credict** | Explainability + accuracy + fairness + local deployability | Still a prototype; needs production hardening |
 
-**Positioning statement:** "CreditLens fills the gap between black-box
+**Positioning statement:** "Credict fills the gap between black-box
 commercial tools and traditional rule-based scorecards, delivering AI
 accuracy with analyst-grade transparency."
 
@@ -325,7 +325,7 @@ accuracy with analyst-grade transparency."
    real Pakistani bank results could differ.
 
 4. **Regulatory pathway** — getting SBP approval for use in actual lending
-   decisions is a multi-year process. CreditLens is positioned as
+   decisions is a multi-year process. Credict is positioned as
    decision-support, which can be deployed today (aided by explainability).
 
 5. **Commercial build cost assumes hiring** — a solo student-built version
@@ -351,6 +351,6 @@ The pitch should highlight:
 - **Risk mitigation:** Decision-support positioning, local deployability,
   built-in fairness audit
 
-**The single most important sentence for judges:** *"If CreditLens saves a
+**The single most important sentence for judges:** *"If Credict saves a
 mid-size Pakistani bank even 2% of its credit card defaults, it saves PKR
 30 million per year. The tool costs PKR 1.5 million. The math is not close."*

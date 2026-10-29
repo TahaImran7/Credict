@@ -1,6 +1,6 @@
-# CreditLens — Testing & Validation Report
+# Credict — Testing & Validation Report
 
-This document records the testing evidence for CreditLens. Every figure
+This document records the testing evidence for Credict. Every figure
 in this report is from actual test runs. No results are fabricated.
 
 ---
@@ -43,7 +43,7 @@ pytest tests -v
 
 The single warning is a pre-existing `scipy.optimize` deprecation emitted
 from inside scikit-learn's Logistic Regression solver. It is unrelated to
-CreditLens code and does not affect correctness. Documented in
+Credict code and does not affect correctness. Documented in
 `docs/limitations.md`.
 
 ---
@@ -399,7 +399,7 @@ required before full verification is possible.
 | Defects caught | 5, all fixed |
 | Known limitations | 8 documented above |
 
-**CreditLens is a complete, tested, validated academic prototype.**
+**Credict is a complete, tested, validated academic prototype.**
 Every claim in the README and pitch deck is supported by evidence in
 this document. No test was claimed as passed that was not actually
 executed.

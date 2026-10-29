@@ -97,7 +97,7 @@ def render() -> None:
         st.download_button(
             "Download metrics CSV",
             data=fairness_report_csv(metrics_df, diffs_df),
-            file_name="creditlens_fairness_metrics.csv",
+            file_name="Credict_fairness_metrics.csv",
             mime="text/csv",
             use_container_width=True,
         )
@@ -106,7 +106,7 @@ def render() -> None:
             "Download fairness JSON",
             data=fairness_report_json(metrics_df, diffs_df, warnings,
                                      limitation_text=FAIRNESS_LIMITATION),
-            file_name="creditlens_fairness_report.json",
+            file_name="Credict_fairness_report.json",
             mime="application/json",
             use_container_width=True,
         )

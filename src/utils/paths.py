@@ -1,5 +1,5 @@
 """
-Central path resolution for CreditLens.
+Central path resolution for Credict.
 
 Every path used by the project is derived from PROJECT_ROOT, which is
 computed from this file's location. This guarantees portability: the project
@@ -8,7 +8,7 @@ can be cloned to any directory on any OS without editing code.
 
 from pathlib import Path
 
-# src/utils/paths.py -> parents[0]=utils, [1]=src, [2]=CreditLens
+# src/utils/paths.py -> parents[0]=utils, [1]=src, [2]=Credict
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
 
 # Top-level directories

@@ -1,7 +1,7 @@
-# CreditLens — Secondary Research & Problem Validation
+# Credict — Secondary Research & Problem Validation
 
 **Purpose:** Validate that credit risk assessment is a real, well-documented
-problem and that CreditLens addresses a genuine gap. All evidence is from
+problem and that Credict addresses a genuine gap. All evidence is from
 published sources, regulatory reports, and existing product analysis —
 no primary interviews conducted (appropriate for a semester-scope project).
 
@@ -35,9 +35,9 @@ networks — have become standard in the literature.
 - Hand, D. J., & Henley, W. E. (1997). "Statistical Classification Methods
   in Consumer Credit Scoring: a Review." *Journal of the Royal Statistical
   Society*, 160(3), 523-541. Establishes the consumer credit scoring
-  problem formulation used in CreditLens.
+  problem formulation used in Credict.
 
-### 1.2 The UCI dataset used by CreditLens is standard
+### 1.2 The UCI dataset used by Credict is standard
 
 The dataset used in this project — "Default of Credit Card Clients" —
 was published by Yeh & Lien (2009):
@@ -50,7 +50,7 @@ The dataset has been used in **hundreds of published papers** and is
 considered a benchmark for credit default prediction. It reflects real
 customer payment behaviour from a Taiwanese bank (April–September 2005).
 The dataset's 22% default rate makes it class-imbalanced, requiring
-specific handling — exactly the issue CreditLens addresses.
+specific handling — exactly the issue Credict addresses.
 
 ### 1.3 Reported accuracy benchmarks on this dataset
 
@@ -61,9 +61,9 @@ From published literature:
 | Yeh & Lien (2009) | Neural network | ~81% | ~0.75 |
 | Various (2015–2020) | Random Forest | 79–82% | 0.75–0.78 |
 | Various (2018–2023) | XGBoost / LightGBM | 80–83% | 0.77–0.79 |
-| **CreditLens (this project)** | **Random Forest (calibrated)** | **79.5%** | **0.773** |
+| **Credict (this project)** | **Random Forest (calibrated)** | **79.5%** | **0.773** |
 
-**Interpretation:** CreditLens achieves results **in line with published
+**Interpretation:** Credict achieves results **in line with published
 benchmarks** — not below them. This is a strong, defensible position.
 Claims of 90%+ accuracy on this dataset typically involve data leakage or
 balanced-test-set evaluation (non-realistic).
@@ -123,7 +123,7 @@ proposition for any risk-conscious institution.
 
 ### 3.1 Commercial credit scoring products
 
-| Product | Category | Strengths | Weaknesses relative to CreditLens |
+| Product | Category | Strengths | Weaknesses relative to Credict |
 |---|---|---|---|
 | **FICO Score** | Global leader | Proven accuracy, regulator-accepted | **Black box** — no per-prediction explanation. Expensive. |
 | **Experian** | Global | Similar to FICO | Black box, expensive |
@@ -132,7 +132,7 @@ proposition for any risk-conscious institution.
 
 ### 3.2 Local Pakistani solutions
 
-| Category | Examples | What they do | Gap CreditLens fills |
+| Category | Examples | What they do | Gap Credict fills |
 |---|---|---|---|
 | **Credit bureaus** | eCIB (SBP), DataCheck | Provide raw credit history data | Do not provide AI-based prediction with explanation |
 | **Bank internal models** | Varies per bank | Mostly rule-based or simple regression | Limited nonlinear pattern capture; no per-prediction explanation |
@@ -140,7 +140,7 @@ proposition for any risk-conscious institution.
 
 ### 3.3 Open-source alternatives
 
-| Tool | What it does | Why CreditLens adds value |
+| Tool | What it does | Why Credict adds value |
 |---|---|---|
 | **scikit-learn** | Model training library | Provides models but no pipeline, UI, or explainability wrapper |
 | **SHAP library** | Model explanation | Provides explanations but no credit-risk-specific framing, no fairness audit, no portfolio analytics, no what-if |
@@ -156,17 +156,17 @@ locally-available Pakistani solution** that combines:
 5. Fairness audit
 6. Professional interactive dashboard
 
-**CreditLens fills this gap.**
+**Credict fills this gap.**
 
 ---
 
-## 4. Academic Foundations for CreditLens Components
+## 4. Academic Foundations for Credict Components
 
 ### 4.1 SHAP (SHapley Additive exPlanations)
 
 - Lundberg, S. M., & Lee, S. I. (2017). "A Unified Approach to
   Interpreting Model Predictions." *NeurIPS 30*, 4765-4774.
-- Original SHAP paper. Used by CreditLens for feature-level
+- Original SHAP paper. Used by Credict for feature-level
   explanations.
 - Supported by **thousands of citations** and adopted by Google,
   Microsoft, and numerous financial institutions.
@@ -187,7 +187,7 @@ locally-available Pakistani solution** that combines:
 - Establishes that random forests and SVMs produce poorly calibrated
   probabilities without post-hoc adjustment.
 - Platt (1999) introduced sigmoid calibration; Zadrozny & Elkan (2002)
-  introduced isotonic regression. CreditLens uses the latter —
+  introduced isotonic regression. Credict uses the latter —
   appropriate when training samples are sufficient (>1,000).
 
 ### 4.4 Fairness in credit scoring
@@ -228,18 +228,18 @@ locally-available Pakistani solution** that combines:
    should be verified from SBP's quarterly *Payment Systems Review* before
    any commercial claim.
 
-3. **Literature benchmarks are the ceiling for accuracy.** CreditLens's
+3. **Literature benchmarks are the ceiling for accuracy.** Credict's
    79.5% is competitive but not state-of-the-art. State-of-the-art models
    (XGBoost, LightGBM, ensembles) achieve ~82–83% — a 2–3pp improvement
    at the cost of complexity and loss of interpretability.
 
-4. **Fairness analysis is descriptive only.** CreditLens reports group-
+4. **Fairness analysis is descriptive only.** Credict reports group-
    level metrics but does not certify compliance with any fairness
    standard (disparate impact, equalized odds, etc.). This is an academic
    audit, not a regulatory certification.
 
 5. **Regulatory pathway is not addressed.** SBP approval for use in actual
-   lending decisions would require a multi-year process. CreditLens is
+   lending decisions would require a multi-year process. Credict is
    positioned as **decision-support**, not decision-making — a legally
    safer framing.
 
@@ -253,7 +253,7 @@ locally-available Pakistani solution** that combines:
 > explanation. Pakistani banks face regulatory pressure to justify
 > decisions, but no local or open-source tool combines prediction,
 > explanation, simulation, and fairness audit in one platform.
-> CreditLens fills this gap, delivering explainable AI credit risk
+> Credict fills this gap, delivering explainable AI credit risk
 > at published-benchmark accuracy."
 
 **Citations ready for slide deck:** 8 academic references + 3 regulatory

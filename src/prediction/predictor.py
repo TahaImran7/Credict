@@ -1,5 +1,5 @@
 """
-Prediction interface for CreditLens.
+Prediction interface for Credict.
 
 Uses the calibrated Random Forest for probability display so that
 probabilities reflect observed frequencies. The raw Random Forest remains

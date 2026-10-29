@@ -1,1 +1,1 @@
-"""CreditLens configuration package."""
+"""Credict configuration package."""

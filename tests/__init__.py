@@ -1,1 +1,1 @@
-"""CreditLens test suite."""
+"""Credict test suite."""

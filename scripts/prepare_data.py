@@ -16,7 +16,7 @@ log = get_logger(__name__)
 
 
 def main() -> None:
-    log.info("=== CreditLens Phase 2: dataset preparation ===")
+    log.info("=== Credict Phase 2: dataset preparation ===")
 
     path = download_dataset()
     log.info("Using dataset file: %s", path)

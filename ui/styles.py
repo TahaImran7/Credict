@@ -1,5 +1,5 @@
 """
-CreditLens visual design system — light and dark themes.
+Credict visual design system — light and dark themes.
 """
 
 import streamlit as st
@@ -414,7 +414,7 @@ hr {{ border: none; border-top: 1px solid {p['BORDER']}; margin: 20px 0; }}
     padding: 8px;
 }}
 
-/* ---------- CreditLens custom components ---------- */
+/* ---------- Credict custom components ---------- */
 .cl-section-title {{
     color: {p['NAVY']} !important;
     font-size: 19px; font-weight: 600;

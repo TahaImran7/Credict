@@ -1,5 +1,5 @@
 """
-Evaluation metrics, curves, and calibration data for CreditLens.
+Evaluation metrics, curves, and calibration data for Credict.
 """
 
 import json

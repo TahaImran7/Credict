@@ -1,5 +1,5 @@
 """
-Probability calibration for CreditLens.
+Probability calibration for Credict.
 
 The Random Forest is trained with balanced class weights, which improves
 discrimination on imbalanced data but inflates predicted probabilities

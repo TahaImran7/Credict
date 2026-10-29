@@ -1,5 +1,5 @@
 """
-Plotly chart builders for CreditLens.
+Plotly chart builders for Credict.
 
 Every chart is theme-aware. Multi-line traces use styles.CHART_SEQUENCE.
 """

@@ -41,7 +41,7 @@ def _relative_eval_path(filename: str) -> str:
 
 
 def main() -> None:
-    log.info("=== CreditLens Phase 6: fairness audit ===")
+    log.info("=== Credict Phase 6: fairness audit ===")
 
     X_train, X_test, y_train, y_test = pp.load_splits()
 

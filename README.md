@@ -1,4 +1,4 @@
-# CreditLens
+# Credict
 
 **Explainable AI Credit Risk Assessment & Decision Support Platform**
 
@@ -35,13 +35,13 @@ portfolio analytics, and fairness auditing.
 
 ```bash
 # 1. Clone / extract this project, then:
-python -m venv .creditlens_venv
+python -m venv .Credict_venv
 
 # Windows:
-.creditlens_venv\Scripts\activate
+.Credict_venv\Scripts\activate
 
 # macOS / Linux:
-source .creditlens_venv/bin/activate
+source .Credict_venv/bin/activate
 
 # 2. Install dependencies
 pip install --upgrade pip
@@ -80,14 +80,14 @@ Open <http://localhost:8501>. Hard-refresh (`Ctrl+Shift+R` on Windows/Linux,
 - **Internet:** required only for dependency installation and the dataset
   download. Not required at runtime.
 
-**Tested on:** Windows 11, Python 3.12.10, `.creditlens_venv`.
+**Tested on:** Windows 11, Python 3.12.10, `.Credict_venv`.
 
 ---
 
 ## Project Structure
 
 ```
-CreditLens/
+Credict/
 ├── app.py                          # Streamlit entry point
 ├── requirements.txt
 ├── README.md
@@ -342,8 +342,8 @@ from the current version. The `_tiny_data` helper must produce two-class
 
 The virtual environment is not activated. Activate it:
 
-- Windows: `.creditlens_venv\Scripts\activate`
-- macOS/Linux: `source .creditlens_venv/bin/activate`
+- Windows: `.Credict_venv\Scripts\activate`
+- macOS/Linux: `source .Credict_venv/bin/activate`
 
 ### App runs but slow on first prediction
 
@@ -476,7 +476,7 @@ from primary regulatory sources.
 Academic project — for educational and demonstration use.
 
 **Not licensed for production deployment** without additional hardening,
-security audit, and regulatory review. CreditLens is a decision-support
+security audit, and regulatory review. Credict is a decision-support
 prototype, not a lending authority. Predictions must not be used to
 approve or reject real applicants.
 

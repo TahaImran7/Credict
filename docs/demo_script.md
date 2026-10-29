@@ -1,4 +1,4 @@
-# CreditLens — Demo Script (5 Minutes)
+# Credict — Demo Script (5 Minutes)
 
 Live walkthrough for pitch day. Practice twice before the actual
 presentation.
@@ -15,7 +15,7 @@ presentation.
 
 ## 0:00 – 0:20 — Introduction
 
-> "This is CreditLens — an explainable AI platform for credit risk
+> "This is Credict — an explainable AI platform for credit risk
 > assessment. I'll show you the four most important things: prediction
 > with explanation, what-if analysis, model comparison, and fairness
 > audit. Five minutes total."
@@ -180,7 +180,7 @@ presentation.
 
 **Pause.**
 
-> "That's CreditLens. Happy to answer questions."
+> "That's Credict. Happy to answer questions."
 
 ---
 

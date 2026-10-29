@@ -1,5 +1,5 @@
 """
-Dataset validation for CreditLens.
+Dataset validation for Credict.
 
 Checks structural integrity (shape, columns, target, value ranges) and emits
 a structured report. Used in Phase 2 tests and shown in the Phase 7 UI.

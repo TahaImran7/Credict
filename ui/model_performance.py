@@ -36,7 +36,7 @@ def render() -> None:
     st.download_button(
         "Download comparison CSV",
         data=comparison_report_csv(comparison),
-        file_name="creditlens_model_comparison.csv",
+        file_name="Credict_model_comparison.csv",
         mime="text/csv",
     )
 

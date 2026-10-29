@@ -1,5 +1,5 @@
 """
-Dataset download and loading for CreditLens.
+Dataset download and loading for Credict.
 
 Handles the fact that different UCI mirrors expose the target column under
 different names, and that the .xls workbook contains a legacy numbering row

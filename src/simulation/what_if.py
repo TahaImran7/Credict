@@ -1,5 +1,5 @@
 """
-What-if simulator for CreditLens.
+What-if simulator for Credict.
 
 Allows controlled modification of selected customer features and returns a
 side-by-side comparison of original and modified model estimates.

@@ -1,4 +1,4 @@
-# CreditLens — pinned dependency set
+# Credict — pinned dependency set
 # Python 3.10 – 3.12 supported. NumPy 2.x required by modern pyarrow.
 
 pandas>=2.2,<3.0

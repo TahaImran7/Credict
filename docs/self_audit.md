@@ -1,6 +1,6 @@
-# CreditLens — Self-Audit & Validation Evidence
+# Credict — Self-Audit & Validation Evidence
 
-**Purpose:** Document evidence that CreditLens works as specified, that
+**Purpose:** Document evidence that Credict works as specified, that
 its calculations are correct, and that its predictions are consistent
 with the published literature. This section replaces primary peer review
 (appropriate for semester-scope project — see §6 for discussion of the
@@ -162,7 +162,7 @@ raw RF.
 | Various (2015-2020) | Random forest | 0.75–0.78 | **0.773** (in range) |
 | Various (2018-2023) | XGBoost (SOTA) | 0.77–0.79 | **0.773** (competitive) |
 
-**Conclusion:** CreditLens is **within published benchmark range** for
+**Conclusion:** Credict is **within published benchmark range** for
 this dataset. Not state-of-the-art (XGBoost would be ~0.78-0.79), but
 competitive — and with substantially better explainability.
 
@@ -318,7 +318,7 @@ fairness metric definitions) has inline comments explaining *why*.
 
 ## 7. Pitch-Ready Summary
 
-> "CreditLens is verified by 147 automated tests covering data loading,
+> "Credict is verified by 147 automated tests covering data loading,
 > preprocessing, model training, calibration, prediction, explainability,
 > simulation, fairness auditing, and reporting. Both light and dark
 > themes were manually tested across all 8 UI pages. The calibrated

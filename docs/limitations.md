@@ -4,9 +4,9 @@
 ## FILE 6 — `docs/limitations.md`
 
 ```markdown
-# CreditLens — Consolidated Limitations
+# Credict — Consolidated Limitations
 
-This document consolidates all known limitations of CreditLens in one
+This document consolidates all known limitations of Credict in one
 place. Every claim in the pitch, README, and report should be read in the
 context of these limitations.
 
@@ -32,7 +32,7 @@ context of these limitations.
   bureau data
 - **Implication:** Real bank deployments would likely include these for
   better performance
-- **Mitigation:** CreditLens uses only the 23 UCI features; document as
+- **Mitigation:** Credict uses only the 23 UCI features; document as
   scope
 
 ### 1.4 Undocumented category codes
@@ -143,7 +143,7 @@ context of these limitations.
 - **Dimensions:** SEX, EDUCATION, MARRIAGE, AGE_BAND
 - **Missing:** Income (not in dataset), geography (not in dataset),
   employment status (not in dataset)
-- **Implication:** CreditLens cannot audit dimensions the UCI dataset
+- **Implication:** Credict cannot audit dimensions the UCI dataset
   does not contain
 
 ---
@@ -247,7 +247,7 @@ context of these limitations.
 
 ## 9. Ethical Considerations
 
-### 9.1 CreditLens must not be used to approve/reject real applicants
+### 9.1 Credict must not be used to approve/reject real applicants
 - **Reason:** Academic prototype, not regulatory certified
 - **Guardrail:** UI disclaimers on every prediction page
 - **Risk:** If used improperly, could cause real financial harm
@@ -265,7 +265,7 @@ context of these limitations.
 
 ---
 
-## 10. What Would Strengthen CreditLens
+## 10. What Would Strengthen Credict
 
 Priority-ordered list of enhancements for Phase 2:
 
@@ -282,7 +282,7 @@ Priority-ordered list of enhancements for Phase 2:
 
 ## 11. Honest Summary
 
-CreditLens is a **complete, tested, working academic prototype**. It
+Credict is a **complete, tested, working academic prototype**. It
 demonstrates:
 - End-to-end ML pipeline
 - Probability calibration

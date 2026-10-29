@@ -1,5 +1,5 @@
 """
-Portfolio-level analytics for CreditLens.
+Portfolio-level analytics for Credict.
 
 All functions return plain pandas objects (DataFrames / Series) so they can
 be tested without a UI and plotted later. No Plotly imports here.

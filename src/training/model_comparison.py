@@ -1,5 +1,5 @@
 """
-Model comparison utilities for CreditLens.
+Model comparison utilities for Credict.
 
 Handles the two-stage selection:
   Stage 1: Pick best base model family (LR vs RF) by PR-AUC then ROC-AUC.

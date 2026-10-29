@@ -13,7 +13,7 @@ from ui import _cache
 
 def render() -> None:
     c.page_title(
-        "CreditLens Overview",
+        "Credict Overview",
         "Portfolio-level risk summary, model status, and headline metrics.",
     )
 

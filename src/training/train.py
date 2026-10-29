@@ -1,5 +1,5 @@
 """
-Model training for CreditLens.
+Model training for Credict.
 
 Two pipelines are built and tuned with cross-validation on the training set:
   - Logistic Regression (interpretable baseline)

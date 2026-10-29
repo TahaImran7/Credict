@@ -26,8 +26,8 @@ from src.utils.paths import (
 from config import settings
 
 
-def test_project_root_resolves_to_creditlens_folder() -> None:
-    """paths.PROJECT_ROOT must be the CreditLens directory containing app.py."""
+def test_project_root_resolves_to_Credict_folder() -> None:
+    """paths.PROJECT_ROOT must be the Credict directory containing app.py."""
     assert PROJECT_ROOT.is_dir()
     assert (PROJECT_ROOT / "app.py").is_file() or True  # app.py may not exist at import time
     # The root must contain the config/ and src/ folders
@@ -65,7 +65,7 @@ def test_target_column_candidates_present() -> None:
 
 def test_logging_emits_message(caplog: pytest.LogCaptureFixture) -> None:
     from src.utils.logging_config import get_logger
-    log = get_logger("creditlens.test")
+    log = get_logger("Credict.test")
     with caplog.at_level(logging.INFO):
         log.info("phase-1 smoke test")
     assert any("phase-1 smoke test" in r.message for r in caplog.records)

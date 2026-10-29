@@ -1,5 +1,5 @@
 """
-Pre-compute dashboard artefacts for CreditLens.
+Pre-compute dashboard artefacts for Credict.
 
 Run once after Phase 3 (or after retraining):
     python -m scripts.build_dashboard_artifacts
@@ -22,7 +22,7 @@ log = get_logger(__name__)
 
 
 def main() -> None:
-    log.info("=== CreditLens: pre-computing dashboard artefacts ===")
+    log.info("=== Credict: pre-computing dashboard artefacts ===")
 
     _, X_test, _, y_test = pp.load_splits()
 

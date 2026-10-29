@@ -42,7 +42,7 @@ def render() -> None:
                 "Random Forest selected by PR-AUC then ROC-AUC.",
             ],
         ),
-        file_name="creditlens_model_metadata.json",
+        file_name="Credict_model_metadata.json",
         mime="application/json",
     )
 
@@ -51,7 +51,7 @@ def render() -> None:
     st.download_button(
         "Download comparison CSV",
         data=comparison_report_csv(comparison),
-        file_name="creditlens_model_comparison.csv",
+        file_name="Credict_model_comparison.csv",
         mime="text/csv",
     )
 
@@ -70,7 +70,7 @@ def render() -> None:
             st.download_button(
                 "Download fairness CSV",
                 data=fairness_report_csv(metrics_df, diffs_df),
-                file_name="creditlens_fairness_metrics.csv",
+                file_name="Credict_fairness_metrics.csv",
                 mime="text/csv",
                 use_container_width=True,
             )
@@ -79,7 +79,7 @@ def render() -> None:
                 "Download fairness JSON",
                 data=fairness_report_json(metrics_df, diffs_df,
                                           limitation_text=FAIRNESS_LIMITATION),
-                file_name="creditlens_fairness_report.json",
+                file_name="Credict_fairness_report.json",
                 mime="application/json",
                 use_container_width=True,
             )

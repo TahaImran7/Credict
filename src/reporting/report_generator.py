@@ -1,5 +1,5 @@
 """
-Report and export utilities for CreditLens.
+Report and export utilities for Credict.
 
 Everything returns bytes (CSV or JSON) so the Streamlit UI can hand the
 payload directly to st.download_button without touching the filesystem.

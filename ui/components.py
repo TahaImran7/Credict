@@ -1,4 +1,4 @@
-"""Reusable UI components for the CreditLens dashboard."""
+"""Reusable UI components for the Credict dashboard."""
 
 from typing import Iterable
 

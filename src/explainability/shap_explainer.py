@@ -1,5 +1,5 @@
 """
-SHAP-based explanations for CreditLens.
+SHAP-based explanations for Credict.
 
 Uses the RAW Random Forest classifier (not the calibrated wrapper) for
 TreeExplainer, which requires a tree-based estimator. If the model name

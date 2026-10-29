@@ -1,5 +1,5 @@
 """
-Group-level fairness audit for CreditLens.
+Group-level fairness audit for Credict.
 
 This module is for educational model auditing. It does not certify legal
 compliance and does not prove or disprove discrimination. Differences in

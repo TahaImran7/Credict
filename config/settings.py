@@ -1,5 +1,5 @@
 """
-CreditLens — central configuration.
+Credict — central configuration.
 
 Single source of truth for:
 - Random seed
@@ -42,7 +42,7 @@ DATASET_URL: str = (
 # Row 1 contains the real column names.
 DATASET_HEADER_ROW: int = 1
 
-# Canonical target column name used throughout CreditLens.
+# Canonical target column name used throughout Credict.
 TARGET_COLUMN: str = "default payment next month"
 
 # Variants observed in other mirrors of the same dataset. The loader renames

@@ -1,6 +1,6 @@
-# CreditLens — Project Overview
+# Credict — Project Overview
 
-**Full title:** CreditLens — Explainable AI Credit Risk Assessment &
+**Full title:** Credict — Explainable AI Credit Risk Assessment &
 Decision Support Platform
 
 **Type:** Semester project (AI/ML + Accounting & Finance)
@@ -18,7 +18,7 @@ next-month payment, and present the result with model comparison,
 explainability, what-if simulation, portfolio analytics, fairness
 auditing, and downloadable reports.
 
-CreditLens is a **decision-support tool** for credit-risk analysis. It is
+Credict is a **decision-support tool** for credit-risk analysis. It is
 not a lending authority and does not approve or reject real applicants.
 
 ---
@@ -28,7 +28,7 @@ not a lending authority and does not approve or reject real applicants.
 Financial institutions need systematic methods to identify customers who
 may fail to make required payments. Black-box AI models produce risk
 estimates that are difficult for analysts, auditors, and regulators to
-interpret. CreditLens addresses this by combining predictive accuracy with
+interpret. Credict addresses this by combining predictive accuracy with
 SHAP-based per-prediction explanations, fairness auditing, and scenario
 analysis.
 
@@ -86,7 +86,7 @@ remains for SHAP explanations (tree explainer requires raw classifier).
 | **Random Forest (calibrated) — deployed** | **0.7950** | **0.5358** | **0.5463** | **0.5410** | **0.7732** | **0.5391** | **0.1361** |
 
 **Benchmark context:** Published accuracy on this dataset ranges 79–83%
-for state-of-the-art methods. CreditLens sits within this range, with
+for state-of-the-art methods. Credict sits within this range, with
 substantially better explainability.
 
 **Calibration impact:** Brier score improved 11.4% (0.1536 → 0.1361).
@@ -191,7 +191,7 @@ computation is local.
 
 ## Project Structure
 
-CreditLens/
+Credict/
 ├── app.py # Streamlit entry point
 ├── config/settings.py # Central configuration
 ├── src/ # Core logic (UI-independent)
@@ -266,7 +266,7 @@ See `docs/self_audit.md` for detailed evidence.
    improved probability quality.
 
 6. **No regulatory approval.** SBP compliance for use in actual lending
-   decisions would require a multi-year process. CreditLens is positioned
+   decisions would require a multi-year process. Credict is positioned
    as decision-support, not decision-making.
 
 7. **No user-facing validation interviews.** Secondary research and

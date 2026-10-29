@@ -1,5 +1,5 @@
 """
-Cleaning, splitting, and preprocessing for CreditLens.
+Cleaning, splitting, and preprocessing for Credict.
 
 The preprocessor is a single fitted ColumnTransformer that is shared by
 training, prediction, and what-if simulation. Fitting is done on training
